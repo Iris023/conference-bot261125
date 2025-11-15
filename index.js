@@ -60,7 +60,7 @@ function appendRegistrationRow({ telegramId, username, inn, fio, phone, email, c
 
 
 
-// ⬇⬇⬇ вставь сюда токен бота от BotFather
+// ⬇⬇⬇  токен бота от BotFather
 const BOT_TOKEN = '8447521660:AAH7pVxRPBzibHjyzIj9wZfF6PbW5sBuGpM';
 
 if (!BOT_TOKEN) {
@@ -74,7 +74,7 @@ const bot = new Telegraf(BOT_TOKEN);
 const userStates = {};
 
 // Список администраторов (пока пустой, потом заполним)
-const ADMINS = [];
+const ADMINS = [65306522, 411253861];
 
 // Проверка прав администратора
 function isAdmin(ctx) {
