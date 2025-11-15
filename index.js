@@ -279,13 +279,24 @@ bot.action('program', async (ctx) => {
 
 // Обработка всех текстовых сообщений от пользователя (для регистрации)
 bot.on('text', async (ctx) => {
+    const text = ctx.message.text.trim();
+
+  // Если это команда (начинается с /) — всегда пропускаем дальше,
+  // пусть её обработает bot.command(...)
+  if (text.startsWith('/')) {
+    return next();
+  };
+
   const userId = ctx.from.id;
   const state = userStates[userId];
 
-  // Если пользователь НЕ в процессе регистрации — игнорируем
-  if (!state) return;
+  // Если пользователь НЕ в процессе регистрации — тоже пропускаем дальше
+  if (!state) {
+    return next();
+  }
 
-  const text = ctx.message.text.trim();
+
+
 
   // --- ШАГ 1: ИНН ---
   if (state.step === 'inn') {
