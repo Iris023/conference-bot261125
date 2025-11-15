@@ -275,24 +275,109 @@ bot.action('program', async (ctx) => {
   );
 });
 
+bot.command('export', async (ctx) => {
+   if (!isAdmin(ctx)) {
+    return ctx.reply('У вас нет прав администратора.');
+  };
+
+  console.log('Команда /export от администратора:', ctx.from.id);
+
+  // маленькое сообщение, чтобы ты видела, что команда сработала
+  await ctx.reply('Готовлю файл с регистрациями, пожалуйста подождите...');
+
+  try {
+    // проверяем, что файл существует
+    if (!fs.existsSync(REG_FILE)) {
+      console.error('Файл регистраций не найден по пути:', REG_FILE);
+      return ctx.reply('Файл с регистрациями пока не создан.');
+    }
+
+    await ctx.replyWithDocument({
+      source: fs.createReadStream(REG_FILE),
+      filename: 'registrations.csv',
+    });
+
+  } catch (e) {
+    console.error('Ошибка при отправке файла регистраций:', e);
+    await ctx.reply('Не удалось отправить файл с регистрациями. Сообщите разработчику.');
+  }
+});
+
+bot.command('notifyall', async (ctx) => {
+  if (!isAdmin(ctx)) {
+    return ctx.reply('У вас нет прав администратора.');
+  }
+
+  const parts = ctx.message.text.split(' ');
+  const messageText = parts.slice(1).join(' ').trim();
+
+  if (!messageText) {
+    return ctx.reply(
+      'После команды нужно написать текст рассылки.\n\n' +
+      'Например:\n' +
+      '/notifyall Напоминаем, что форум «Производительность у моря» состоится 26.11.2025 в 10:00.'
+    );
+  }
+
+  console.log('Команда /notifyall от администратора:', ctx.from.id);
+  await ctx.reply('Начинаю рассылку, пожалуйста подождите...');
+
+  let content;
+  try {
+    content = fs.readFileSync(REG_FILE, 'utf8');
+  } catch (e) {
+    console.error('Ошибка чтения файла регистраций:', e);
+    return ctx.reply('Не удалось прочитать файл с регистрациями. Сообщите разработчику.');
+  }
+
+  const lines = content.trim().split('\n').slice(1); // пропускаем заголовок
+  const chatIds = new Set();
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = line.split(';');
+    const idStr = cols[1]; // TelegramID — второй столбец
+    const idNum = Number(idStr);
+    if (!Number.isNaN(idNum)) {
+      chatIds.add(idNum);
+    }
+  }
+
+  await ctx.reply(`Получателей в базе: ${chatIds.size}. Начинаю отправку.`);
+
+  let success = 0;
+  let failed = 0;
+
+  for (const chatId of chatIds) {
+    try {
+      await ctx.telegram.sendMessage(chatId, messageText);
+      success++;
+    } catch (e) {
+      failed++;
+      console.error('Ошибка отправки сообщения пользователю', chatId, e.message);
+    }
+  }
+
+  await ctx.reply(`Рассылка завершена ✅\nУспешно: ${success}\nОшибок: ${failed}`);
+});
+
 
 
 // Обработка всех текстовых сообщений от пользователя (для регистрации)
 bot.on('text', async (ctx) => {
-    const text = ctx.message.text.trim();
+    const text = (ctx.message.text || '').trim();
 
-  // Если это команда (начинается с /) — всегда пропускаем дальше,
-  // пусть её обработает bot.command(...)
+  // Команды (/start, /export, /notifyall и т.п.) — не трогаем
   if (text.startsWith('/')) {
-    return next();
-  };
+    return;
+  }
 
   const userId = ctx.from.id;
   const state = userStates[userId];
 
   // Если пользователь НЕ в процессе регистрации — тоже пропускаем дальше
   if (!state) {
-    return next();
+    return;
   }
 
 
@@ -522,32 +607,6 @@ if (already) {
 }
 
 });
-
-
-bot.command('export', async (ctx) => {
-  console.log('Команда /export от пользователя:', ctx.from.id);
-
-  // маленькое сообщение, чтобы ты видела, что команда сработала
-  await ctx.reply('Готовлю файл с регистрациями, пожалуйста подождите...');
-
-  try {
-    // проверяем, что файл существует
-    if (!fs.existsSync(REG_FILE)) {
-      console.error('Файл регистраций не найден по пути:', REG_FILE);
-      return ctx.reply('Файл с регистрациями пока не создан.');
-    }
-
-    await ctx.replyWithDocument({
-      source: fs.createReadStream(REG_FILE),
-      filename: 'registrations.csv',
-    });
-
-  } catch (e) {
-    console.error('Ошибка при отправке файла регистраций:', e);
-    await ctx.reply('Не удалось отправить файл с регистрациями. Сообщите разработчику.');
-  }
-});
-
 
 
 // Запуск бота
