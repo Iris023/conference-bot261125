@@ -73,6 +73,22 @@ const bot = new Telegraf(BOT_TOKEN);
 // Чтобы отслеживать, на каком шаге находится пользователь
 const userStates = {};
 
+// Удаляет кнопки, когда пользователь нажимает inline-кнопку
+async function clearInlineButtons(ctx) {
+  try {
+    await ctx.answerCbQuery();
+  } catch (e) {
+    // иногда Telegram уже ответил — игнорируем
+  }
+
+  try {
+    await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
+  } catch (e) {
+    // если нельзя убрать кнопки — не страшно
+  }
+}
+
+
 // /start — приветствие + кнопки
 bot.start(async (ctx) => {
   const userId = ctx.from.id;
@@ -112,11 +128,9 @@ bot.start(async (ctx) => {
   );
 });
 
-
-
 // Начало регистрации
 bot.action('register', async (ctx) => {
-  await ctx.answerCbQuery();
+  await clearInlineButtons(ctx);
 
   const userId = ctx.from.id;
 
@@ -144,7 +158,7 @@ bot.action('register', async (ctx) => {
 });
 
 bot.action('consent_yes', async (ctx) => {
-  await ctx.answerCbQuery();
+  await clearInlineButtons(ctx);
 
   const userId = ctx.from.id;
   const state = userStates[userId];
@@ -166,7 +180,7 @@ bot.action('consent_yes', async (ctx) => {
 });
 
 bot.action('consent_no', async (ctx) => {
-  await ctx.answerCbQuery();
+  await clearInlineButtons(ctx);
 
   const userId = ctx.from.id;
   const state = userStates[userId];
@@ -186,7 +200,7 @@ bot.action('consent_no', async (ctx) => {
 });
 
 bot.action('restart', async (ctx) => {
-  await ctx.answerCbQuery();
+  await clearInlineButtons(ctx);
 
   const userId = ctx.from.id;
   delete userStates[userId]; // сброс состояния
@@ -217,7 +231,7 @@ bot.action('restart', async (ctx) => {
 
 // Программа конференции
 bot.action('program', async (ctx) => {
-  await ctx.answerCbQuery();
+  await clearInlineButtons(ctx);
 
   const text =
     '<b>📋 Программа конференции «Производительность у моря»</b>\n\n' +
