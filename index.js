@@ -73,6 +73,14 @@ const bot = new Telegraf(BOT_TOKEN);
 // Чтобы отслеживать, на каком шаге находится пользователь
 const userStates = {};
 
+// Список администраторов (пока пустой, потом заполним)
+const ADMINS = [];
+
+// Проверка прав администратора
+function isAdmin(ctx) {
+  return ADMINS.includes(ctx.from.id);
+}
+
 // Удаляет кнопки, когда пользователь нажимает inline-кнопку
 async function clearInlineButtons(ctx) {
   try {
@@ -504,6 +512,18 @@ if (already) {
 
 });
 
+
+bot.command('export', async (ctx) => {
+  try {
+    await ctx.replyWithDocument({
+      source: REG_FILE,
+      filename: 'registrations.csv',
+    });
+  } catch (e) {
+    console.error('Ошибка при отправке файла регистраций:', e);
+    await ctx.reply('Не удалось отправить файл с регистрациями. Сообщите разработчику.');
+  }
+});
 
 
 // Запуск бота
