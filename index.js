@@ -514,16 +514,29 @@ if (already) {
 
 
 bot.command('export', async (ctx) => {
+  console.log('Команда /export от пользователя:', ctx.from.id);
+
+  // маленькое сообщение, чтобы ты видела, что команда сработала
+  await ctx.reply('Готовлю файл с регистрациями, пожалуйста подождите...');
+
   try {
+    // проверяем, что файл существует
+    if (!fs.existsSync(REG_FILE)) {
+      console.error('Файл регистраций не найден по пути:', REG_FILE);
+      return ctx.reply('Файл с регистрациями пока не создан.');
+    }
+
     await ctx.replyWithDocument({
-      source: REG_FILE,
+      source: fs.createReadStream(REG_FILE),
       filename: 'registrations.csv',
     });
+
   } catch (e) {
     console.error('Ошибка при отправке файла регистраций:', e);
     await ctx.reply('Не удалось отправить файл с регистрациями. Сообщите разработчику.');
   }
 });
+
 
 
 // Запуск бота
