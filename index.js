@@ -61,7 +61,7 @@ function appendRegistrationRow({ telegramId, username, inn, fio, phone, email, c
 
 
 // ⬇⬇⬇  токен бота от BotFather
-const BOT_TOKEN = '8447521660:8502274335:AAFUCT5ntVys8dRqjKgLf9k_0LFDYUpSopo';
+const BOT_TOKEN = '8502274335:AAFUCT5ntVys8dRqjKgLf9k_0LFDYUpSopo';
 
 if (!BOT_TOKEN) {
   console.error('Нет токена бота. Проверь BOT_TOKEN.');
@@ -81,7 +81,7 @@ function isAdmin(ctx) {
   return ADMINS.includes(ctx.from.id);
 }
 
-// Удаляет кнопки, когда пользователь нажимает inline-кнопку
+// Удаляет кнопки, когда пользователь нажимает gitinline-кнопку
 async function clearInlineButtons(ctx) {
   try {
     await ctx.answerCbQuery();
