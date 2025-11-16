@@ -61,7 +61,7 @@ function appendRegistrationRow({ telegramId, username, inn, fio, phone, email, c
 
 
 // ⬇⬇⬇  токен бота от BotFather
-const BOT_TOKEN = '8447521660:AAH7pVxRPBzibHjyzIj9wZfF6PbW5sBuGpM';
+const BOT_TOKEN = '8447521660:8502274335:AAFUCT5ntVys8dRqjKgLf9k_0LFDYUpSopo';
 
 if (!BOT_TOKEN) {
   console.error('Нет токена бота. Проверь BOT_TOKEN.');
