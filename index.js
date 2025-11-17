@@ -74,7 +74,7 @@ const bot = new Telegraf(BOT_TOKEN);
 const userStates = {};
 
 // Список администраторов (пока пустой, потом заполним)
-const ADMINS = [65306522, 411253861];
+const ADMINS = [65306522, 411253861, 812556475];
 
 // Проверка прав администратора
 function isAdmin(ctx) {
