@@ -182,12 +182,14 @@ async function startRegistration(ctx) {
     data: {}
   };
 
-  await ctx.reply(
+    await ctx.reply(
     'Для регистрации на конференцию «Производительность у моря» ' +
     'понадобятся ИНН компании, ФИО представителя, номер телефона и адрес электронной почты.\n\n' +
     'Нажимая «Согласен», вы подтверждаете, что даёте согласие на обработку этих персональных данных ' +
-    'организаторами конференции исключительно в целях организации и проведения мероприятия.',
+    'организаторами конференции исключительно в целях организации и проведения мероприятия ' +
+    'в соответствии с <a href="https://xn--25-9kcqjffxnf3b.xn--p1ai/upload/medialibrary/b9c/uglrk8d92ec86zq6lcypwn5s15hdwfn5/Politika-konfidentsialnosti-personalnykh-dannykh-_Prilozhenie-1-k-prikazu-_91-ot-21.12.2023_na-sayt.pdf">Политикой конфиденциальности</a>.',
     {
+      parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
           [
@@ -198,6 +200,7 @@ async function startRegistration(ctx) {
       }
     }
   );
+
 }
 
 //функция экспорта регистраций (для админов)
