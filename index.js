@@ -87,20 +87,23 @@ function isAdmin(ctx) {
 async function showMainMenu(ctx) {
   const isAdminUser = isAdmin(ctx);
 
-  const buttons = [
-    ['📝 Пройти регистрацию'],
-    ['📋 Программа конференции'],
+  const inlineKeyboard = [
+    [Markup.button.callback('📝 Пройти регистрацию', 'register')],
+    [Markup.button.callback('📋 Программа конференции', 'program')],
   ];
 
   if (isAdminUser) {
-    buttons.push(['⚙ Админ-панель']);
+    inlineKeyboard.push([
+      Markup.button.callback('⚙ Админ-панель', 'admin_menu'),
+    ]);
   }
 
   await ctx.reply(
     'Выберите действие:',
-    Markup.keyboard(buttons).resize().oneTime(false)
+    Markup.inlineKeyboard(inlineKeyboard)
   );
 }
+
 
 //панель админов
 async function showAdminPanel(ctx) {
@@ -120,7 +123,7 @@ async function showAdminPanel(ctx) {
 }
 
 
-// Удаляет кнопки, когда пользователь нажимает gitinline-кнопку
+// Удаляет inline-кнопки, когда пользователь нажимает на них
 async function clearInlineButtons(ctx) {
   try {
     await ctx.answerCbQuery();
@@ -324,12 +327,19 @@ bot.action('restart', async (ctx) => {
   );
 });
 
+bot.action('admin_menu', async (ctx) => {
+  await clearInlineButtons(ctx);
+  await showAdminPanel(ctx);
+});
+
+
 
 // Вызов программы мероприятия
 bot.action('program', async (ctx) => {
   await clearInlineButtons(ctx);
   await sendProgram(ctx);
 });
+
 
 bot.action('admin_export', async (ctx) => {
   await clearInlineButtons(ctx);
@@ -347,14 +357,19 @@ bot.action('admin_notify_help', async (ctx) => {
 });
 
 
-//ХЕНДЛЕРЫ
-bot.hears('📋 Программа конференции', async (ctx) => {
-  await sendProgram(ctx);
-});
 
-bot.hears('📝 Пройти регистрацию', async (ctx) => {
-  await startRegistration(ctx);
-});
+//ХЕНДЛЕРЫ
+// bot.hears('📋 Программа конференции', async (ctx) => {
+//   await sendProgram(ctx);
+// });
+
+// bot.hears('📝 Пройти регистрацию', async (ctx) => {
+//   await startRegistration(ctx);
+// });
+
+// bot.hears('⚙ Админ-панель', async (ctx) => {
+//   await showAdminPanel(ctx);
+// });
 
 
 
@@ -433,9 +448,7 @@ bot.command('admin', async (ctx) => {
   await showAdminPanel(ctx);
 });
 
-bot.hears('⚙ Админ-панель', async (ctx) => {
-  await showAdminPanel(ctx);
-});
+
 
 
 
